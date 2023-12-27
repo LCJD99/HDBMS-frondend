@@ -30,49 +30,37 @@ import loginService from '../services/login'
 
 const defaultTheme = createTheme();
 
-export default function SignIn({ changeState }) {
+export default function SignIn( {changeState} ) {
   const navigate = useNavigate()
   const [Data, setData] = useState({
     "account": "",
     "password": "",
     "role": ""
   })
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    setData({
-      "account": data.get("account"),
-      "password": data.get("password"),
-      "role": data.get("role"),
-    },() =>{
-      console.log({
-        Data,
-      });
 
+  useEffect(() => {
+    console.log({
+      Data,
     })
-
     try {
-      loginService.login(Data).then((user) => {
-        if (user.length < 1) {
-          console.log("error")
-          setData({
-            "account": "",
-            "password": "",
-            "role": ""
-          })
-        } else {
-          console.log("user:", user[0]);
-          changeState({
-            "Id": user[0].id,
-            "role": Data.role,
-            "isLogin": true
-          })
-          navigate('/'+Data.role);
-
-        }
-
-      })
-
+      if(Data.account === '' || Data.password === ''){
+        console.log("It is empty");
+      }else{
+        loginService.login(Data).then((user) => {
+          if (user.length < 1) {
+            console.log("error")
+          } else {
+            console.log("user:", user[0]);
+            changeState(
+              true,
+              user[0].id,
+              Data.role
+            )
+            navigate('/' + Data.role);
+          }
+  
+        })
+      }
       // setData({
       //   "account": "",
       //   "password": "",
@@ -81,7 +69,17 @@ export default function SignIn({ changeState }) {
     } catch (exception) {
       console.log("exception", exception);
     }
-  };
+  }, [Data]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setData({
+      "account": data.get("account"),
+      "password": data.get("password"),
+      "role": data.get("role"),
+    })
+  }
 
   return (
     <ThemeProvider theme={defaultTheme}>

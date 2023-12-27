@@ -39,7 +39,7 @@ const App = () => {
 
   //回调函数获取判断登录情况
   const getLogInStatus = (statue, id, role) =>{
-    console.log("backfunction");
+    console.log("backfunction", id);
     setUserInfo({
       "Id" : id,
       "role" : role,
@@ -49,27 +49,12 @@ const App = () => {
 
   //自动获取服务器数据并存入状态中
   useEffect(() => {
-    noteService
-      .getAll()
-      .then(initialNotes => {
-        setNotes(initialNotes)
-      })
+    console.log(UserInfo);
   }, [])
 
-  //保存到浏览器中
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
-      noteService.setToken(user.token)
-    }
-  }, [])
 
   //控制子组件的钩子
   const noteFormRef = useRef()
-
-  
 
   //向服务器添加一个笔记
   const addNote = (noteObject) => {
@@ -106,62 +91,19 @@ const App = () => {
       })
   }
 
-  //判断并跳转
-  
-  // if (isLogin === true){
-  //   navigate('/patient')
-  // }
-
   return (
     <div>
       <Router>
         <Routes>
-          <Route path="/patient" element={<Patient id={UserInfo.Id} />} />
-          <Route path="/doctor" element={<Doctor id={UserInfo.Id} />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/patient" element={<Patient Id={UserInfo.Id}  />} />
+          <Route path="/doctor" element={<Doctor Id={UserInfo.Id} /> } />
+          <Route path="/admin" element={<Admin Id={UserInfo.Id} />} />
           <Route path="/" element={<Login changeState={getLogInStatus}/>} />
         </Routes>
       </Router>
 
-      <h1>Notes app</h1>
-      <Notification message={errorMessage} />
+      <h1>{UserInfo.Id}</h1>
 
-      {/* {!user &&
-        <Togglable buttonLabel="log in">
-          <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
-          />
-        </Togglable>
-      }
-      {user &&
-        <div>
-          <p>{user.name} logged in</p>
-          <Togglable buttonLabel="new note" ref={noteFormRef}>
-            <NoteForm createNote={addNote} />
-          </Togglable>
-        </div>
-      } */}
-
-      {/* <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
-        </button>
-      </div>
-      <ul>
-        {notesToShow.map(note =>
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() => toggleImportanceOf(note.id)}
-          />
-        )}
-      </ul> */}
-
-      <Footer />
     </div>
   )
 }
